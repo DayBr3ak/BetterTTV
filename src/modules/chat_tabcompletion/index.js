@@ -7,7 +7,7 @@ const ChatHistoryModule = require('./chat-history-module');
 
 const CHAT_INPUT = '.chat-input';
 
-class ChatAutocompletionModule {
+class ChatTabCompletionModule {
     constructor() {
         settings.add({
             id: 'tabAutocomplete',
@@ -55,6 +55,10 @@ class ChatAutocompletionModule {
         }
         this.chatHistory.onFocus();
     }
+
+    onSendMessage(msgObj) {
+        this.chatHistory.onSendMessage(msgObj);
+    }
 }
 
-module.exports = new ChatAutocompletionModule();
+module.exports = new ChatTabCompletionModule();

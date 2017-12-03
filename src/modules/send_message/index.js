@@ -2,6 +2,7 @@ const twitch = require('../../utils/twitch');
 const watcher = require('../../watcher');
 const debug = require('../../utils/debug');
 
+const tabCompletion = require('../chat_tabcompletion');
 const chatCommands = require('../chat_commands');
 const anonChat = require('../anon_chat');
 const socketClient = require('../../socket-client');
@@ -26,7 +27,7 @@ class SendState {
 
 let twitchSendMessage;
 const methodList = [
-    // msgObj => tabCompletion.onSendMessage(msgObj),
+    msgObj => tabCompletion.onSendMessage(msgObj),
     msgObj => chatCommands.onSendMessage(msgObj),
     msgObj => anonChat.onSendMessage(msgObj)
 ];

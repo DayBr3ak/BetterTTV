@@ -20,7 +20,7 @@ class InputPatcherModule {
     constructor() {
         this.debounceLoadEmotes = debounce(() => {
             this.loadEmotes();
-        }, 4000, { leading: true, trailing: false });
+        }, 300, { leading: true, trailing: false });
 
         this.load = NOPE;
         this.onFocus = NOPE;

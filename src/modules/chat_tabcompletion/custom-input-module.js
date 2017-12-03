@@ -51,7 +51,6 @@ class CustomInputModule {
         });
 
         this.init();
-        watcher.on('input.onSendMessage', () => this.sendMessage());
         watcher.on('chat.message', ($el, msg) => this.storeUser($el, msg));
     }
 
@@ -71,12 +70,11 @@ class CustomInputModule {
         if (message.trim().length === 0) {
             return;
         }
-        this.chatInputCtrl.props.onSendMessage(message);
+        twitch.sendChatMessage(message);
         this.$text.val('');
     }
 
     load(createTextarea = true) {
-        this.chatInputCtrl = twitch.getChatInputController();
         if (createTextarea) {
             const { $text, $oldText } = newTextArea();
             this.$text = $text;
@@ -128,6 +126,7 @@ class CustomInputModule {
 
         if (keyCode === keyCodes.Enter && !e.shiftKey) {
             e.preventDefault();
+            this.sendMessage();
         } else if (keyCode === keyCodes.Tab) {
             e.preventDefault();
             this.onAutoComplete(includeUsers, e.shiftKey);
@@ -181,7 +180,7 @@ class CustomInputModule {
     }
 
     getTwitchEmotes() {
-        const twEmotes = this.chatInputCtrl.props.emotes;
+        const twEmotes = twitch.getChatInputController().props.emotes;
         if (!twEmotes) {
             return [];
         }
@@ -191,7 +190,7 @@ class CustomInputModule {
     }
 
     getChatMembers() {
-        const broadcasterName = this.chatInputCtrl.props.channelDisplayName;
+        const broadcasterName = twitch.getCurrentChannel().displayName;
         this.userList.add(broadcasterName);
         return Array.from(this.userList.values());
     }

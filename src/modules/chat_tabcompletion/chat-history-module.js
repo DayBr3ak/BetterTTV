@@ -1,9 +1,17 @@
 const $ = require('jquery');
 const keyCodes = require('../../utils/keycodes');
-const watcher = require('../../watcher');
 
 function isSuggestionsShowing() {
     return !!$('[data-a-target="autocomplete-balloon"]')[0];
+}
+
+function valueSetter(inputElement) {
+    return function(value) {
+        if (!inputElement || !inputElement.customSetValue) {
+            return;
+        }
+        inputElement.customSetValue(value);
+    };
 }
 
 class ChatHistoryModule {
@@ -20,13 +28,9 @@ class ChatHistoryModule {
             return;
         }
         const $inputField = $(e.target);
-        const setInputValue = value => {
-            e.target.customSetValue(value);
-        };
+        const setInputValue = valueSetter(e.target);
 
-        if (keyCode === keyCodes.Enter && !e.shiftKey) {
-            this.onSendMessage($inputField.val());
-        } else if (keyCode === keyCodes.UpArrow) {
+        if (keyCode === keyCodes.UpArrow) {
             if (isSuggestionsShowing()) return;
             if ($inputField[0].selectionStart > 0) return;
             if (this.historyPos + 1 === this.messageHistory.length) return;
@@ -54,11 +58,10 @@ class ChatHistoryModule {
         }
     }
 
-    onSendMessage(message) {
-        if (message.trim().length === 0) return;
-        this.messageHistory.unshift(message);
+    onSendMessage(msgObj) {
+        if (msgObj.message.trim().length === 0) return;
+        this.messageHistory.unshift(msgObj.message);
         this.historyPos = -1;
-        watcher.emit('input.onSendMessage', message);
     }
 
     onFocus() {
