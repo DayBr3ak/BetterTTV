@@ -30,9 +30,9 @@ class ChatTabCompletionModule {
     }
 
     load(chatLoad = true) {
+        this.chatHistory.load(chatLoad);
         this.customInput.load(chatLoad);
         this.patchedInput.load(chatLoad);
-        this.chatHistory.load(chatLoad);
         if (settings.get('tabAutocomplete')) {
             this.customInput.enable();
             this.currentInput = this.customInput;

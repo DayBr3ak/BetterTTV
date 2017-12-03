@@ -15,17 +15,9 @@ function setReactTextareaValue(txt, msg) {
 
 function newTextArea() {
     // Replaces Twitch Text Input with our own
-    const text = document.createElement('textarea');
     const $oldText = $(ORIGINAL_TEXTAREA);
-    $oldText[0].before(text);
-    const $text = $(text);
+    const $text = $oldText.clone().insertAfter(ORIGINAL_TEXTAREA);
 
-    Array.from($oldText[0].attributes)
-        .map(attrEl => attrEl.name)
-        .forEach(attr => {
-            const v = $oldText.attr(attr);
-            $text.attr(attr, v);
-        });
     $text.attr('id', 'bttv-chat-input');
     $oldText.attr('id', 'twitch-chat-input');
     $oldText.hide();
@@ -74,8 +66,8 @@ class CustomInputModule {
         this.$text.val('');
     }
 
-    load(createTextarea = true) {
-        if (createTextarea) {
+    load() {
+        if (!$('#bttv-chat-input')[0] || !$('#twitch-chat-input')[0]) {
             const { $text, $oldText } = newTextArea();
             this.$text = $text;
             this.$oldText = $oldText;
