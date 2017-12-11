@@ -11,14 +11,14 @@ class DirectoryLiveFollowingModule {
             description: 'BetterTTV can click on "Channels" for you in the Following Overview automatically'
         });
         settings.add({
-            id: 'autoExpandChannels',
-            name: 'Auto Expand Followed Live Channels List',
+            id: 'autoExpandLiveChannels',
+            name: 'Automatically Load Your Live Followed Channels',
             defaultValue: false,
-            description: 'Automatically clicks the "Load More" option for you'
+            description: 'Automatically clicks the "View All" feature for you'
         });
 
         watcher.on('load.directory.following', () => this.load());
-        watcher.on('load', () => this.toggleAutoExpandChannels());
+        watcher.on('load', () => this.startAutoExpandChannels());
     }
 
     load() {
@@ -26,9 +26,9 @@ class DirectoryLiveFollowingModule {
         $('a[href="/directory/following/live"]')[0].click();
     }
 
-    toggleAutoExpandChannels() {
+    startAutoExpandChannels() {
         if (!window.location.href.includes('directory/following/live')) return;
-        if (!settings.get('autoExpandChannels')) return;
+        if (!settings.get('autoExpandLiveChannels')) return;
 
         $('.following__view-all').click();
         const expandInterval = setInterval(() => {
