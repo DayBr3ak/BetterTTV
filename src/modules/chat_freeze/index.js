@@ -1,5 +1,6 @@
 const $ = require('jquery');
 const watcher = require('../../watcher');
+const storage = require('../../storage');
 const twitch = require('../../utils/twitch');
 const keycodes = require('../../utils/keycodes');
 
@@ -9,16 +10,18 @@ const FREEZE_KEYS = [keycodes.Ctrl, keycodes.Meta];
 
 const PATCHED_SYMBOL = Symbol();
 let twitchSetState;
+let bufferSize;
 
-function setChatBufferDelay(delay) {
+function setChatBufferSize(size) {
+    if (!size) return;
     try {
-        twitch.getChatController().chatBuffer.setDelay(delay);
+        twitch.getChatController().chatBuffer.maxSize = size;
     } catch (_) {}
 }
 
 function patchedSetState({isAutoScrolling}) {
     if (isAutoScrolling !== undefined) {
-        setChatBufferDelay(isAutoScrolling ? 0 : Infinity);
+        setChatBufferSize(isAutoScrolling ? bufferSize : Infinity);
     }
     return twitchSetState.apply(this, arguments);
 }
@@ -68,7 +71,19 @@ class ChatFreezeModule {
                 setScrollState(indicator);
             });
 
-        watcher.on('load.chat', patchScroller);
+        watcher.on('load.chat', () => {
+            bufferSize = storage.get('scrollbackAmount');
+            if (!bufferSize) {
+                try {
+                    bufferSize = twitch.getChatController().chatBuffer.maxSize;
+                } catch (_) {}
+            }
+            bufferSize && patchScroller();
+        });
+
+        storage.on('changed.scrollbackAmount', newSize => {
+            bufferSize = newSize;
+        });
     }
 }
 
